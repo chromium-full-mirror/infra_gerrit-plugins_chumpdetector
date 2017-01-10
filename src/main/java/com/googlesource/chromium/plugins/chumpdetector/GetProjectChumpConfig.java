@@ -51,6 +51,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     }
 
     r.treeName = name;
+    r.disabled = cfg.getBoolean(PROJECT, name, "disabled", false);
     r.viewURL = cfg.getString(PROJECT, name, "viewURL");
     r.statusURL = cfg.getString(PROJECT, name, "statusURL");
     r.withCredentials = cfg.getBoolean(PROJECT, name, "withCredentials", false);
@@ -60,6 +61,9 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
   }
 
   static class ChumpConfig {
+    @SerializedName("disabled")
+    boolean disabled;
+
     @SerializedName("treeName")
     String treeName;
 

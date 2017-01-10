@@ -432,6 +432,9 @@ self.on('showchange', function(change, revision) {
     if (!config || !config.statusURL) {
       console.log('No status url for this project.');
       return;
+    } else if (config.disabled) {
+      console.log('Chumpdetector is disabled for this project.');
+      return;
     }
     // Install new one if the project is supported.
     var fetcher;
