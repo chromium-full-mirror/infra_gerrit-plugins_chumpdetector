@@ -382,20 +382,6 @@ function getProjectConfig(project) {
   */
   // If we've fetched it already, use the config set on the window.
   var config = window.chumpDetectorConfig;
-  if (Array.isArray(config)) {
-    // Backwards compatibility for configs set via the GerritSiteFooter.
-    // These old-style configs are set at the host level, rather than
-    // the project level, and use a regex pattern to turn on/off per project.
-    // TODO(agable): Remove this after initial deployment.
-    for (var i = 0; i < config.length; i++) {
-      if (new RegExp(config[i].pattern).test(project)) {
-        window.chumpDetectorConfig = config[i];
-        window.chumpDetectorConfig.treeName = config[i].topLevelName;
-        config = window.chumpDetectorConfig;
-        break;
-      }
-    }
-  }
   if (config !== undefined) {
     return Promise.resolve(config);
   }
@@ -403,12 +389,7 @@ function getProjectConfig(project) {
   // Otherwise, fetch it and store it for reuse.
   var chumpdetectorURL = '/projects/' + encodeURIComponent(project) +
       '/chumpdetector~config';
-  return fetchJSON(chumpdetectorURL).catch(function() {
-    // During rollout, a new frontend could make a request to an old backend,
-    // so include fallback to the old endpoint just in case.
-    // TODO(agable): Remove this after initial deployment.
-    return fetchJSON('/config/server/chumpdetector~config');
-  }).then(function(cfg) {
+  return fetchJSON(chumpdetectorURL).then(function(cfg) {
     window.chumpDetectorConfig = cfg || null;
     if (!window.chumpDetectorConfig) {
       console.log('Chump detector is not configured.');

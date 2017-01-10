@@ -4,7 +4,6 @@
 
 package com.googlesource.chromium.plugins.chumpdetector;
 
-import static com.google.gerrit.server.config.ConfigResource.CONFIG_KIND;
 import static com.google.gerrit.server.project.ProjectResource.PROJECT_KIND;
 
 import com.google.gerrit.extensions.registration.DynamicSet;
@@ -18,10 +17,5 @@ public class ChumpDetectorModule extends RestApiModule {
     DynamicSet.bind(binder(), WebUiPlugin.class).toInstance(WebUiPlugin.js("chumpdetector.js"));
 
     get(PROJECT_KIND, "config").to(GetProjectChumpConfig.class);
-
-    // TODO(agable): Remove this and GetHostChumpConfig.java. These exist only
-    // for backwards compatibility during the transition, and can be deleted
-    // after the next deployment.
-    get(CONFIG_KIND, "config").to(GetChumpConfig.class);
   }
 }
