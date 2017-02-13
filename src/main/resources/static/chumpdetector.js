@@ -345,7 +345,9 @@ function fetchJSON(url) {
     xhr.open('GET', url);
     xhr.onload = function() {
       var result = null;
-      if (this.status >= 200 && this.status < 300) {
+      if (this.status === 204) {
+        resolve(null);
+      } else if (this.status >= 200 && this.status < 300) {
         try {
           result = JSON.parse(xhr.response.substring(JSON_PREFIX.length));
           resolve(result);

@@ -5,6 +5,7 @@
 package com.googlesource.chromium.plugins.chumpdetector;
 
 import com.google.gerrit.extensions.annotations.PluginName;
+import com.google.gerrit.extensions.restapi.Response;
 import com.google.gerrit.extensions.restapi.RestReadView;
 import com.google.gerrit.server.config.PluginConfigFactory;
 import com.google.gerrit.server.project.NoSuchProjectException;
@@ -30,11 +31,11 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
   }
 
   @Override
-  public ChumpConfig apply(ProjectResource project) throws NoSuchProjectException {
+  public Response<ChumpConfig> apply(ProjectResource project) throws NoSuchProjectException {
     ChumpConfig r = new ChumpConfig();
 
     if (!project.getControl().getUser().isIdentifiedUser()) {
-      return r;
+      return Response.none();
     }
 
     Config cfg =
@@ -43,7 +44,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     Iterator<String> names = cfg.getSubsections(PROJECT).iterator();
     if (!names.hasNext()) {
       LOG.info("Project " + project.getName() + " has an empty config.");
-      return r;
+      return Response.none();
     }
     String name = names.next();
     if (names.hasNext()) {
@@ -57,7 +58,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     r.withCredentials = cfg.getBoolean(PROJECT, name, "withCredentials", false);
     r.enforceCommitQueue = cfg.getBoolean(PROJECT, name, "enforceCommitQueue", false);
     r.disabledBranchPattern = cfg.getString(PROJECT, name, "disabledBranchPattern");
-    return r;
+    return Response.ok(r);
   }
 
   static class ChumpConfig {
