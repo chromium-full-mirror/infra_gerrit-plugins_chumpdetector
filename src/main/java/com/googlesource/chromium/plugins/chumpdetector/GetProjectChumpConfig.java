@@ -34,7 +34,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
   public Response<ChumpConfig> apply(ProjectResource project) throws NoSuchProjectException {
     ChumpConfig r = new ChumpConfig();
 
-    if (!project.getControl().getUser().isIdentifiedUser()) {
+    if (!project.getUser().isIdentifiedUser()) {
       return Response.none();
     }
 
