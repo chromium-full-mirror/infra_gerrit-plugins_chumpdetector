@@ -89,7 +89,14 @@ var STYLES = {
   // Tree is closed.
   closedStatus: Gerrit.css(
     'color: white;' +
-    'background-color: #E98080;')
+    'background-color: #E98080;'),
+
+  confirmSubmitMessage: Gerrit.css(
+    'color: red;' +
+    'width: 400px;'),
+
+  hiddenConfirmSubmitMessage: Gerrit.css(
+    'display: none;')
 };
 
 
@@ -476,6 +483,28 @@ self.on('history', function(token) {
   }
 });
 
+// Add a message div to appear inside the confirm submit dialog.
+var confirmSubmitMessage = document.createElement('p');
+plugin.hook('confirm-submit-change').onAttached(function(element) {
+  element.appendChild(confirmSubmitMessage);
+});
+
+/**
+ * Discard any the message in the confirm submit dialog. (No message to show.)
+ */
+function disableConfirmSubmitMessage() {
+  confirmSubmitMessage.style = STYLES.hiddenConfirmSubmitMessage;
+  confirmSubmitMessage.textContent = '';
+}
+
+/**
+ * Set the message that will be shown in the confirm submit tialog.
+ * @param {string} message The message to appear.
+ */
+function setConfirmSubmitMessage(message) {
+  confirmSubmitMessage.style = STYLES.confirmSubmitMessage;
+  confirmSubmitMessage.textContent = message;
+}
 
 /**
  * Called by Gerrit whenever 'Submit' is clicked.
@@ -483,19 +512,23 @@ self.on('history', function(token) {
  */
 self.on('submitchange', function() {
   // Change is in unsupported project, do not block it.
-  if (!installedTreeStatus)
+  if (!installedTreeStatus) {
+    disableConfirmSubmitMessage();
     return true;
+  }
 
   var treeStatus = installedTreeStatus.treeStatus;
   var config = installedTreeStatus.config;
 
   // Change is in unsupported branch, do not block it.
-  if (treeStatus == DISABLED_BRANCH_TREE_STATUS)
+  if (treeStatus == DISABLED_BRANCH_TREE_STATUS) {
+    disableConfirmSubmitMessage();
     return true;
+  }
 
   // Change should be submitted via CQ (not directly via Gerrit).
   if (config.enforceCommitQueue) {
-    return window.confirm(
+    setConfirmSubmitMessage(
         'The ' + config.treeName + ' project uses the commit queue (CQ). ' +
         'You should submit your change by clicking "Reply" and setting the ' +
         '"Commit-Queue" label to the appropriate value.\n' +
@@ -503,21 +536,24 @@ self.on('submitchange', function() {
   }
 
   // Tree is open, do not block the change.
-  if (treeStatus.isOpen)
+  if (treeStatus.isOpen) {
+    disableConfirmSubmitMessage();
     return true;
+  }
 
   // Unknown tree state. Double check with the user before submitting.
   if (treeStatus.generalState == 'unknown') {
-    return window.confirm(
+    setConfirmSubmitMessage(
         config.treeName + ' tree status is unknown, submitting this ' +
         'change now might be dangerous.  Submit anyway?');
+    return true;
   }
 
   // Tree is closed (or in some entirely unexpected state). Warn the user.
-  return window.confirm(
+  setConfirmSubmitMessage(
       'The ' + config.treeName + ' tree is closed, submitting this ' +
       'change is dangerous.  Submit anyway?');
+  return true;
 });
-
 
 });
