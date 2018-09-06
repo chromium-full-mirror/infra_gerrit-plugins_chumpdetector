@@ -485,7 +485,7 @@ self.on('history', function(token) {
 
 // Add a message div to appear inside the confirm submit dialog.
 var confirmSubmitMessage = document.createElement('p');
-plugin.hook('confirm-submit-change').onAttached(function(element) {
+self.hook('confirm-submit-change').onAttached(function(element) {
   element.appendChild(confirmSubmitMessage);
 });
 
