@@ -299,6 +299,7 @@ StatusFetcher.prototype.onFetchCompleted = function(request) {
     }
   } else {
     var message;
+    var url;
     if (this.withCredentials) {
       url = this.loginURL;
       message = 'Login required';
@@ -425,12 +426,13 @@ function getStatusFetcher(config) {
 }
 
 
-/**
- * Called by Gerrit when change screen is shown.
- * @param {Object} change Object with change details
- * @param {Object} revision Object with revision details
- */
-self.on('showchange', function(change, revision) {
+self.on('showchange',
+  /**
+   * Called by Gerrit when change screen is shown.
+   * @param {Object} change Object with change details
+   * @param {Object} revision Object with revision details
+   */
+  function(change, revision) {
   // Uninstall previous one (if any).
   if (installedTreeStatus) {
     installedTreeStatus.uninstall();
@@ -471,11 +473,12 @@ self.on('showchange', function(change, revision) {
 });
 
 
-/**
- * Called by Gerrit whenever document.location changes.
- * @param {string} token Fragment part of a page URL
- */
-self.on('history', function(token) {
+self.on('history',
+  /**
+   * Called by Gerrit whenever document.location changes.
+   * @param {string} token Fragment part of a page URL
+   */
+  function(token) {
   // Navigated away from a change page? Uninstall tree status UI.
   if (token.substring(0, 2) != '/c' && installedTreeStatus) {
     installedTreeStatus.uninstall();
@@ -506,11 +509,12 @@ function setConfirmSubmitMessage(message) {
   confirmSubmitMessage.textContent = message;
 }
 
-/**
- * Called by Gerrit whenever 'Submit' is clicked.
- * @return {boolean} False to block submit
- */
-self.on('submitchange', function() {
+self.on('submitchange',
+  /**
+   * Called by Gerrit whenever 'Submit' is clicked.
+   * @return {boolean} False to block submit
+   */
+  function() {
   // Change is in unsupported project, do not block it.
   if (!installedTreeStatus) {
     disableConfirmSubmitMessage();
