@@ -537,6 +537,7 @@ self.on('submitchange',
         'You should submit your change by clicking "Reply" and setting the ' +
         '"Commit-Queue" label to the appropriate value.\n' +
         'Do you want to commit the change directly, bypassing CQ (dangerous)?');
+    return true;
   }
 
   // Tree is open, do not block the change.
