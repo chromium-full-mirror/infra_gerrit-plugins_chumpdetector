@@ -17,7 +17,6 @@ import org.eclipse.jgit.lib.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 class GetProjectChumpConfig implements RestReadView<ProjectResource> {
   private static final String PROJECT = "project";
   private static final Logger LOG = LoggerFactory.getLogger(GetProjectChumpConfig.class);
