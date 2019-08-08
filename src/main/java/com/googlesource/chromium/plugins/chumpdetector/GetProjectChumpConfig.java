@@ -57,6 +57,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     r.withCredentials = cfg.getBoolean(PROJECT, name, "withCredentials", false);
     r.enforceCommitQueue = cfg.getBoolean(PROJECT, name, "enforceCommitQueue", false);
     r.disabledBranchPattern = cfg.getString(PROJECT, name, "disabledBranchPattern");
+    r.preloadImageURL = cfg.getString(PROJECT, name, "preloadImageURL");
     return Response.ok(r);
   }
 
@@ -81,5 +82,8 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
 
     @SerializedName("disabledBranchPattern")
     String disabledBranchPattern;
+
+    @SerializedName("preloadImageURL")
+    String preloadImageURL;
   }
 }

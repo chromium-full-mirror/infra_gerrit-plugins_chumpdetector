@@ -66,6 +66,19 @@ CLs on branches that match this pattern will have the plugin disabled. This
 means they won't see tree status and tree status won't effect the CL in any
 way.
 
+### preloadImageURL
+
+This setting causes the plugin to request a URL via an an image that is
+dynamically added to the page before making any other fetch requests.
+This is useful in situations where the request to the status URL will fail
+without certain cookies being set for the status request domain.
+By using an image tag the browser will correctly follow any redirects that a
+login process may require in order to establish the session cookies.
+
+Most installs will not need this configuration and can ignore it. For certain
+sites this may allow them to get security cookies before attempting status
+requests which will fail without the cookies.
+
 ## To use with the local testsite
 
 ```
