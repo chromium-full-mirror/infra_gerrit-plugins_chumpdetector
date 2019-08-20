@@ -14,7 +14,7 @@ import com.google.gerrit.extensions.webui.WebUiPlugin;
 public class ChumpDetectorModule extends RestApiModule {
   @Override
   protected void configure() {
-    DynamicSet.bind(binder(), WebUiPlugin.class).toInstance(WebUiPlugin.js("chumpdetector.html"));
+    DynamicSet.bind(binder(), WebUiPlugin.class).toInstance(WebUiPlugin.js("chumpdetector.js"));
 
     get(PROJECT_KIND, "config").to(GetProjectChumpConfig.class);
   }

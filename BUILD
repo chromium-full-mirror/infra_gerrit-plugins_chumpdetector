@@ -14,6 +14,6 @@ gerrit_plugin(
 
 polygerrit_plugin(
     name = "chumpdetector_ui",
-    app = "src/main/resources/static/chumpdetector.html",
+    app = "src/main/resources/static/chumpdetector.js",
     plugin_name = "chumpdetector",
 )
