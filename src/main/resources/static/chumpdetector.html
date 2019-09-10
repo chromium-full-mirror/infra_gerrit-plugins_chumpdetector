@@ -138,8 +138,7 @@
       if (!fetchers.hasOwnProperty(config.treeName)) {
         fetchers[config.treeName] = new StatusFetcher(config.viewURL,
                                                       config.statusURL,
-                                                      config.withCredentials,
-                                                      config.loginURL);
+                                                      config.withCredentials);
       }
       return fetchers[config.treeName];
     }
@@ -264,13 +263,11 @@
      * @param {string} viewURL URL to link to normally for users to navigate to
      * @param {string} statusURL URL to fetch status from
      * @param {boolean} withCredentials True to send cookies with the request
-     * @param {string} loginURL URL to use for login (if required)
      */
-    const StatusFetcher = function(viewURL, statusURL, withCredentials, loginURL) {
+    const StatusFetcher = function(viewURL, statusURL, withCredentials) {
       this.viewURL = viewURL;
       this.statusURL = statusURL;
       this.withCredentials = withCredentials;
-      this.loginURL = loginURL;
       this.lastKnownStatus = PENDING_TREE_STATUS;
       this.callbacks = [];
       this.request = null;
@@ -357,7 +354,6 @@
         let message;
         let url;
         if (this.withCredentials) {
-          url = this.loginURL;
           message = 'Login required';
         } else {
           url = this.viewURL;
@@ -425,14 +421,30 @@
           fetcher = getStatusFetcher(config);
         }
 
-        // Bind tree status to status fetcher, perform initial fetch.
-        installedTreeStatus = new TreeStatus(change, config);
-        installedTreeStatus.install(element, fetcher);
-        if (fetcher) {
-          installedTreeStatus.setTreeStatus(fetcher.lastKnownStatus);
-          fetcher.fetch();
+        function setupTreeStatus() {
+          // Bind tree status to status fetcher, perform initial fetch.
+          installedTreeStatus = new TreeStatus(change, config);
+          installedTreeStatus.install(element, fetcher);
+          if (fetcher) {
+            installedTreeStatus.setTreeStatus(fetcher.lastKnownStatus);
+            fetcher.fetch();
+          } else {
+            installedTreeStatus.setTreeStatus(DISABLED_BRANCH_TREE_STATUS);
+          }
+        }
+        // If the configuration specifies loading an image URL first then
+        // request the image. Whether it succeeds or fails immediately
+        // move into setting up the tree status request. This allows users
+        // the opportunity to use the image load to establish cookies the
+        // browser may need in order to make the status request which can
+        // work even without the image request succeeding.
+        if (config.preloadImageURL) {
+          var img = new Image();
+          img.addEventListener("load", setupTreeStatus);
+          img.addEventListener("error", setupTreeStatus);
+          img.src = config.preloadImageURL;
         } else {
-          installedTreeStatus.setTreeStatus(DISABLED_BRANCH_TREE_STATUS);
+          setupTreeStatus();
         }
       }, function() {
         console.log('Error fetching config.');
