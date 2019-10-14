@@ -23,6 +23,7 @@ be of the form:
 
 ```
 [project "some-interesting-project"]
+  loginURL = https://login.appspot.com/?next=chromium-status
   viewURL = https://chromium-status.appspot.com/
   statusURL = https://chromium-status.appspot.com/current?format=json
   withCredentials = false
@@ -33,6 +34,14 @@ be of the form:
 ### Project name
 
 The project name doesn't matter, it can be anything you'd like
+
+### loginURL
+
+If `withCredentials` is true and a request for status fails, the system
+assumes that a login is required and has not occurred. In that case the status
+message will change to "Login required. Click here to login." The text will be
+a link that points to the value of `loginURL`.  If `loginURL` is not set then
+the message will just be `RequestError: Login required.` with no link.
 
 ### viewURL
 

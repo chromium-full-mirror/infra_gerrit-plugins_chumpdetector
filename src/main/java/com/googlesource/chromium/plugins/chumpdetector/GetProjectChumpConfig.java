@@ -53,6 +53,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     r.treeName = name;
     r.disabled = cfg.getBoolean(PROJECT, name, "disabled", false);
     r.viewURL = cfg.getString(PROJECT, name, "viewURL");
+    r.loginURL = cfg.getString(PROJECT, name, "loginURL");
     r.statusURL = cfg.getString(PROJECT, name, "statusURL");
     r.withCredentials = cfg.getBoolean(PROJECT, name, "withCredentials", false);
     r.enforceCommitQueue = cfg.getBoolean(PROJECT, name, "enforceCommitQueue", false);
@@ -70,6 +71,9 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
 
     @SerializedName("viewURL")
     String viewURL;
+
+    @SerializedName("loginURL")
+    String loginURL;
 
     @SerializedName("statusURL")
     String statusURL;

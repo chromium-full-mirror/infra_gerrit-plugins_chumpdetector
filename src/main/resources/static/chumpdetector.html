@@ -136,7 +136,8 @@
      */
     const getStatusFetcher = function(config) {
       if (!fetchers.hasOwnProperty(config.treeName)) {
-        fetchers[config.treeName] = new StatusFetcher(config.viewURL,
+        fetchers[config.treeName] = new StatusFetcher(config.loginURL,
+                                                      config.viewURL,
                                                       config.statusURL,
                                                       config.withCredentials);
       }
@@ -260,11 +261,13 @@
   <script>
     /**
      * Periodically fetches tree status for some project.
+     * @param {string} loginURL URL to link to when login failures occur.
      * @param {string} viewURL URL to link to normally for users to navigate to
      * @param {string} statusURL URL to fetch status from
      * @param {boolean} withCredentials True to send cookies with the request
      */
-    const StatusFetcher = function(viewURL, statusURL, withCredentials) {
+    const StatusFetcher = function(loginURL, viewURL, statusURL, withCredentials) {
+      this.loginURL = loginURL;
       this.viewURL = viewURL;
       this.statusURL = statusURL;
       this.withCredentials = withCredentials;
@@ -354,7 +357,17 @@
         let message;
         let url;
         if (this.withCredentials) {
-          message = 'Login required';
+          if (this.loginURL) {
+            message = 'Login required. Click here to login.';
+            url = this.loginURL;
+          } else {
+            message = 'Login required.';
+            console.warn("chumpdetector failed to request " + this.viewURL +
+              " and got status " + request.status + ". You may want to add " +
+              "a loginURL to your chumpdetector configuration to give your " +
+              "users a link they can click on to take them to a login page. " +
+              "See https://chromium.googlesource.com/infra/gerrit-plugins/chumpdetector/#loginurl.");
+          }
         } else {
           url = this.viewURL;
           message = (request.statusText ||
