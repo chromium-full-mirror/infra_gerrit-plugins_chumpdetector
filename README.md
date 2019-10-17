@@ -94,7 +94,7 @@ requests which will fail without the cookies.
 cd ~/gerrit
 ln -s ~/chumpdetector ~/gerrit/plugins
 bazel build //plugins/chumpdetector
-cp -f ~/gerrit/bazel-genfiles/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
+cp -f ~/gerrit/bazel-bin/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
 bazel build gerrit
 java -jar ~/gerrit/bazel-bin/gerrit.war init --batch --dev -d ~/gerrit_testsite
 ~/gerrit_testsite/bin/gerrit.sh start
@@ -104,7 +104,7 @@ When you make changes to chumpdetector
 
 ```
 bazel build //plugins/chumpdetector
-cp -f ~/gerrit/bazel-genfiles/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
+cp -f ~/gerrit/bazel-bin/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
 ~/gerrit_testsite/bin/gerrit.sh restart
 ```
 
