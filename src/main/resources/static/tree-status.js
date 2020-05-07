@@ -5,15 +5,6 @@
 const STATUS_INTERVAL_MS = 60 * 1000;
 const UNKNOWN_DATE = new Date(0);
 
-const UNKNOWN_TREE_STATUS = {
-  isOpen: false,
-  generalState: 'unknown',
-  message: 'Tree status unknown.',
-  username: 'Pending',
-  date: UNKNOWN_DATE,
-  url: null,
-};
-
 const DISABLED_BRANCH_TREE_STATUS = {
   disabled: true,
   isOpen: true,
@@ -36,7 +27,7 @@ export class TreeStatus {
     this.initialized = false;
     this.config = null;
     this.elements = [];
-    this.status = UNKNOWN_TREE_STATUS;
+    this.status = null;
     this.shouldFetchStatus = false;
     if (this.updateInterval) {
       window.clearInterval(this.updateInterval);

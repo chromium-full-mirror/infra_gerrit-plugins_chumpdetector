@@ -22,20 +22,23 @@ class TreeStatusView extends Polymer.Element {
           padding: .4em;
           max-width: 20em;
         }
-        .unknown {
+        #outerDiv.unknown {
           color: black;
           background-color: #FFFC6C;
         }
-        .open {
+        #outerDiv.open {
           color: black;
           background-color: #BCE889;
         }
-        .closed {
+        #outerDiv.closed {
           color: white;
           background-color: #E98080;
         }
+        #outerDiv.hidden {
+          display: none;
+        }
       </style>
-      <div id="outerDiv" class$="[[_getStyle(status.generalState)]]">
+      <div id="outerDiv" class$="[[_getStyle(status)]]">
         <div>
           <template is="dom-if" if="[[status.url]]">
             <a href="[[status.url]]" target="_blank">
@@ -70,8 +73,11 @@ class TreeStatusView extends Polymer.Element {
     };
   }
 
-  _getStyle(generalState) {
-    return generalState || 'unknown';
+  _getStyle(status) {
+    if (!status) {
+      return 'hidden';
+    }
+    return status.generalState || 'unknown';
   }
 
   disconnectedCallback() {
