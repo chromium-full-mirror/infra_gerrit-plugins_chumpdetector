@@ -69,7 +69,10 @@ class ConfirmMessage extends Polymer.Element {
         `The ${config.treeName} project uses the commit queue (CQ). ` +
         `You should submit your change by clicking "Reply" and setting the ` +
         `"Commit-Queue" label to the appropriate value.\n` +
-        `Do you want to commit the change directly, bypassing CQ (dangerous)?`;
+        `If there is a valid reason to bypass the CQ, please state it in ` +
+        `a comment and coordinate with the corresponding oncall staff.\n` +
+        `Once you've completed those steps, do you still want to commit the ` +
+        `change directly, bypassing the CQ (dangerous)?`;
       return;
     }
 
