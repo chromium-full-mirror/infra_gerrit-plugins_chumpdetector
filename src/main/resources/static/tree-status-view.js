@@ -17,7 +17,7 @@ class TreeStatusView extends Polymer.Element {
           align-items: center;
           display: flex;
           font-size: 1.1em;
-          justify-content: center;
+          overflow-wrap: anywhere;
           margin: 5px 0 8px;
           padding: .4em;
           max-width: 20em;
