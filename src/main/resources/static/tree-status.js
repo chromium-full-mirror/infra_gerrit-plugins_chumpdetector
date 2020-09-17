@@ -78,6 +78,9 @@ export class TreeStatus {
     // the opportunity to use the image load to establish cookies the
     // browser may need in order to make the status request which can
     // work even without the image request succeeding.
+    const setupTreeStatus = () => {
+      this._updateStatusOnElements();
+    }
     if (this.config.preloadImageURL) {
       const img = new Image();
       img.addEventListener("load", setupTreeStatus);
