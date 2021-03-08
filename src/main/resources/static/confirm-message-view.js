@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class ConfirmMessage extends Polymer.Element {
+export class ConfirmMessage extends Polymer.Element {
   static get is() {
     return 'confirm-message';
   }

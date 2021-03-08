@@ -5,7 +5,7 @@
 /**
  * Tree status UI for some single change.
  */
-class TreeStatusView extends Polymer.Element {
+export class TreeStatusView extends Polymer.Element {
   static get is() {
     return 'tree-status-view';
   }
