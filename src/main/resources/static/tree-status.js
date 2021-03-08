@@ -51,7 +51,7 @@ export class TreeStatus {
 
     const configUrl =
       `/projects/${encodeURIComponent(change.project)}/chumpdetector~config`;
-    this.config = await this.restApi().get(configUrl) || null;
+    this.config = await this.restApi.get(configUrl) || null;
 
     if (!this.config || !this.config.statusURL) {
       console.info('Chumpdetector is not configured.');

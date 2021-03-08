@@ -6,7 +6,7 @@ import './tree-status-view.js';
 import './confirm-message-view.js';
 
 Gerrit.install(plugin => {
-  const treeStatus = new TreeStatus(plugin.restApi);
+  const treeStatus = new TreeStatus(plugin.restApi());
   plugin.registerCustomComponent(
     'change-metadata-item', 'tree-status-view').onAttached(treeStatusView => {
       treeStatus.register(treeStatusView);
