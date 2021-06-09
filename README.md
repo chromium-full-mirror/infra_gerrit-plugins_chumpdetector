@@ -118,3 +118,9 @@ ln -s /path/to/chumpdetector-plugin/src/main/resources/static polygerrit-ui/app/
 
 You may also need to edit `chumpdetectorURL` to point directly at
 `chromium-review.googlesource.com` instead of being relative.
+
+## To run tests
+
+```
+npm run wct-test
+```

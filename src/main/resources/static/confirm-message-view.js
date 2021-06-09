@@ -85,9 +85,9 @@ export class ConfirmMessage extends Polymer.Element {
     // Tree status is unknown, closed (or in some entirely unexpected state).
     // Warn the user.
     this.disabled = false;
-    this.message =
-      `${config.treeName} tree status is ${status.generalState}, submitting `
-      `this change is dangerous.  Submit anyway?`;
+    this.message = 
+        `${config.treeName} tree status is ${status.generalState}, ` +
+        `submitting this change is dangerous. Submit anyway?`;
   }
 }
 
