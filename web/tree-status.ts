@@ -54,19 +54,14 @@ const DISABLED_BRANCH_TREE_STATUS: Status = {
 };
 
 export class TreeStatus {
-  private restApi: RestPluginApi;
-
-  private updateInterval: number;
-
-  private initialized = false;
+  private readonly restApi: RestPluginApi;
+  private readonly updateInterval: number;
 
   private config: Config | null = null;
-
   private elements: TreeStatusComponents[] = [];
-
-  private status: Status | null = null;
-
+  private initialized = false;
   private shouldFetchStatus = false;
+  private status: Status | null = null;
 
   constructor(restApi: RestPluginApi) {
     this.clear();
@@ -153,10 +148,10 @@ export class TreeStatus {
       return;
     }
     await this.fetchStatus();
-    this.elements.forEach(element => {
+    for (const element of this.elements) {
       element.status = this.status;
       element.config = this.config;
-    });
+    }
   }
 
   private async fetchStatus() {
