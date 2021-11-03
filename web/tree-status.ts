@@ -1,11 +1,49 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/**
+ * @license
+ * Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+import {ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
+
+import {RestPluginApi} from '@gerritcodereview/typescript-api/rest';
+
+import {css, html, LitElement} from 'lit';
+
+import {customElement, property} from 'lit/decorators';
+
+import {Config} from './config';
 
 const STATUS_INTERVAL_MS = 60 * 1000;
 const UNKNOWN_DATE = new Date(0);
 
-const DISABLED_BRANCH_TREE_STATUS = {
+export declare interface TreeStatusComponents {
+  tree: TreeStatus | null;
+  status: Status | null;
+  config: Config | null;
+  change: ChangeInfo;
+}
+
+export declare interface Status {
+  disabled: boolean;
+  isOpen: boolean;
+  generalState: string;
+  message: string;
+  username: string;
+  date: Date;
+  url: string | null;
+}
+
+declare interface StatusResponse {
+  can_commit_freely: boolean;
+  general_state: string;
+  message: string;
+  username: string;
+  date: string;
+}
+
+const DISABLED_BRANCH_TREE_STATUS: Status = {
   disabled: true,
   isOpen: true,
   generalState: 'unknown',
@@ -16,11 +54,27 @@ const DISABLED_BRANCH_TREE_STATUS = {
 };
 
 export class TreeStatus {
-  constructor(restApi) {
+  private restApi: RestPluginApi;
+
+  private updateInterval: number;
+
+  private initialized = false;
+
+  private config: Config | null = null;
+
+  private elements: TreeStatusComponents[] = [];
+
+  private status: Status | null = null;
+
+  private shouldFetchStatus = false;
+
+  constructor(restApi: RestPluginApi) {
     this.clear();
     this.restApi = restApi;
     this.updateInterval = window.setInterval(
-      this._updateStatusOnElements.bind(this), STATUS_INTERVAL_MS);
+      this.updateStatusOnElements.bind(this),
+      STATUS_INTERVAL_MS
+    );
   }
 
   clear() {
@@ -34,24 +88,24 @@ export class TreeStatus {
     }
   }
 
-  async register(element) {
-    await this._ensureInitialized(element.change);
+  async register(element: TreeStatusComponents) {
+    await this.ensureInitialized(element.change);
     element.tree = this;
-    element.config = this.config;
     this.elements.push(element);
-    this._updateStatusOnElements();
+    await this.updateStatusOnElements();
   }
 
-  async _ensureInitialized(change) {
+  private async ensureInitialized(change: ChangeInfo) {
     if (!change || this.initialized) {
       return;
     }
     this.initialized = true;
     this.shouldFetchStatus = false;
 
-    const configUrl =
-      `/projects/${encodeURIComponent(change.project)}/chumpdetector~config`;
-    this.config = await this.restApi.get(configUrl) || null;
+    const configUrl = `/projects/${encodeURIComponent(
+      change.project
+    )}/chumpdetector~config`;
+    this.config = (await this.restApi.get(configUrl)) || null;
 
     if (!this.config || !this.config.statusURL) {
       console.info('Chumpdetector is not configured.');
@@ -63,8 +117,10 @@ export class TreeStatus {
       return;
     }
 
-    if (this.config.disabledBranchPattern &&
-        new RegExp(this.config.disabledBranchPattern).test(change.branch)) {
+    if (
+      this.config.disabledBranchPattern &&
+      new RegExp(this.config.disabledBranchPattern).test(change.branch)
+    ) {
       console.info('Disabling Chumpdetector based on branch name.');
       this.status = DISABLED_BRANCH_TREE_STATUS;
       return;
@@ -78,13 +134,13 @@ export class TreeStatus {
     // the opportunity to use the image load to establish cookies the
     // browser may need in order to make the status request which can
     // work even without the image request succeeding.
-    const setupTreeStatus = () => {
-      this._updateStatusOnElements();
-    }
+    const setupTreeStatus = async () => {
+      await this.updateStatusOnElements();
+    };
     if (this.config.preloadImageURL) {
       const img = new Image();
-      img.addEventListener("load", setupTreeStatus);
-      img.addEventListener("error", setupTreeStatus);
+      img.addEventListener('load', setupTreeStatus);
+      img.addEventListener('error', setupTreeStatus);
       img.src = this.config.preloadImageURL;
     }
 
@@ -92,29 +148,33 @@ export class TreeStatus {
     return;
   }
 
-  async _updateStatusOnElements() {
+  private async updateStatusOnElements() {
     if (!this.initialized || !this.shouldFetchStatus) {
       return;
     }
-    await this._fetchStatus();
+    await this.fetchStatus();
     this.elements.forEach(element => {
-      element.status = Object.assign({}, this.status);
+      element.status = this.status;
+      element.config = this.config;
     });
   }
 
-  async _fetchStatus() {
+  private async fetchStatus() {
+    if (this.config === null) {
+      return;
+    }
     // Launch async GET.
-    const options = {};
+    const options: {[k: string]: string} = {};
     if (this.config.withCredentials) {
-      options.credentials = 'include';
+      options['credentials'] = 'include';
     }
     const response = await fetch(this.config.statusURL, options);
     const responseText = await response.text();
     console.info('Fetched', this.config.statusURL);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       try {
-        const jsonResponse = JSON.parse(responseText);
+        const jsonResponse = JSON.parse(responseText) as StatusResponse;
         this.status = {
           disabled: false,
           isOpen: jsonResponse.can_commit_freely,
@@ -125,7 +185,7 @@ export class TreeStatus {
           url: this.config.viewURL,
         };
       } catch (exception) {
-        console.error('Error parsing json: ' + exception);
+        console.error(`Error parsing json: ${exception}`);
         this.status = {
           disabled: false,
           isOpen: false,
@@ -145,25 +205,25 @@ export class TreeStatus {
       generalState: 'unknown',
       username: 'RequestError',
       date: UNKNOWN_DATE,
+      message: 'Login required.',
+      url: null,
     };
 
     if (!this.config.withCredentials) {
       this.status.url = this.config.viewURL;
-      this.status.message = (
-        responseText ||
-        'Error ' + response.status + ' requesting tree status');
+      this.status.message =
+        responseText || `Error ${response.status} requesting tree status`;
     } else if (this.config.loginURL) {
       this.status.url = this.config.loginURL;
       this.status.message = 'Login required. Click here to login.';
     } else {
-      this.status.url = null;
-      this.status.message = 'Login required.';
       console.warn(
         `chumpdetector failed to request ${this.config.viewURL} and got ` +
-        `status ${response.status}. You may want to add a loginURL to your ` +
-        `chumpdetector configuration to give your users a link they can ` +
-        `click on to take them to a logging page. See ` +
-        `https://chromium.googlesource.com/infra/gerrit-plugins/chumpdetector/#loginurl.`);
+          `status ${response.status}. You may want to add a loginURL to your ` +
+          'chumpdetector configuration to give your users a link they can ' +
+          'click on to take them to a logging page. See ' +
+          'https://chromium.googlesource.com/infra/gerrit-plugins/chumpdetector/#loginurl.'
+      );
     }
   }
 }
@@ -171,87 +231,73 @@ export class TreeStatus {
 /**
  * Tree status UI for some single change.
  */
-export class TreeStatusView extends Polymer.Element {
-  static get is() {
-    return 'tree-status-view';
-  }
+@customElement('tree-status-view')
+export class TreeStatusView extends LitElement {
+  @property()
+  change!: ChangeInfo;
 
-  static get template() {
-    return Polymer.html`
-      <style>
-        #outerDiv {
-          align-items: center;
-          display: flex;
-          font-size: 1.1em;
-          overflow-wrap: anywhere;
-          margin: 5px 0 8px;
-          padding: .4em;
-          max-width: 20em;
-        }
-        #outerDiv.unknown {
-          color: black;
-          background-color: #FFFC6C;
-        }
-        #outerDiv.open {
-          color: black;
-          background-color: #BCE889;
-        }
-        #outerDiv.closed {
-          color: white;
-          background-color: #E98080;
-        }
-        #outerDiv.hidden {
-          display: none;
-        }
-      </style>
-      <div id="outerDiv" class$="[[_getStyle(status)]]">
-        <div>
-          <template is="dom-if" if="[[status.url]]">
-            <a href="[[status.url]]" target="_blank">
-              [[status.message]]
-            </a>
-          </template>
-          <template is="dom-if" if="[[!status.url]]">
-            [[status.username]]: [[status.message]]
-          </template>
-        </div>
+  @property()
+  status: Status | null = null;
+
+  @property()
+  config: Config | null = null;
+
+  @property()
+  tree: TreeStatus | null = null;
+
+  static override styles = css`
+    #outerDiv {
+      align-items: center;
+      display: flex;
+      font-size: 1.1em;
+      overflow-wrap: anywhere;
+      margin: 5px 0 8px;
+      padding: 0.4em;
+      max-width: 20em;
+    }
+    #outerDiv.unknown {
+      color: black;
+      background-color: #fffc6c;
+    }
+    #outerDiv.open {
+      color: black;
+      background-color: #bce889;
+    }
+    #outerDiv.closed {
+      color: white;
+      background-color: #e98080;
+    }
+    #outerDiv.hidden {
+      display: none;
+    }
+  `;
+
+  override render() {
+    if (!this.status) {
+      return;
+    }
+    return html`<div id="outerDiv" class="${this.getStyle()}">
+      <div>
+        ${this.status.url
+          ? html`<a href="${this.status.url}" target="_blank">
+              ${this.status.message}
+            </a>`
+          : html`${this.status.username}: ${this.status.message}`}
       </div>
-    `;
+    </div>`;
   }
 
-  static get properties() {
-    return {
-      change: {
-        type: Object,
-      },
-      config: {
-        type: Object,
-        value: null,
-      },
-      status: {
-        type: Object,
-        value: null,
-      },
-      tree: {
-        type: Object,
-        value: null,
-      },
-    };
-  }
-
-  _getStyle(status) {
-    if (!status) {
+  private getStyle() {
+    if (!this.status) {
       return 'hidden';
     }
-    return status.generalState || 'unknown';
+    return this.status.generalState || 'unknown';
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.tree) {
       this.tree.clear();
     }
   }
 }
-
-customElements.define(TreeStatusView.is, TreeStatusView);

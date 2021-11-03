@@ -88,39 +88,30 @@ Most installs will not need this configuration and can ignore it. For certain
 sites this may allow them to get security cookies before attempting status
 requests which will fail without the cookies.
 
-## To use with the local testsite
 
-```
-cd ~/gerrit
-ln -s ~/chumpdetector ~/gerrit/plugins
-bazel build //plugins/chumpdetector
-cp -f ~/gerrit/bazel-bin/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
-bazel build gerrit
-java -jar ~/gerrit/bazel-bin/gerrit.war init --batch --dev -d ~/gerrit_testsite
-~/gerrit_testsite/bin/gerrit.sh start
-```
+## Web Plugin Development
 
-When you make changes to chumpdetector
+For running TypeScript unit tests execute:
 
-```
-bazel build //plugins/chumpdetector
-cp -f ~/gerrit/bazel-bin/plugins/chumpdetector/chumpdetector.jar ~/gerrit_testsite/plugins/
-~/gerrit_testsite/bin/gerrit.sh restart
-```
+    bazel test --test_output=all //plugins/chumpdetector/web:karma_test
 
-## To use with the polygerrit-ui server against live data
+For checking or fixing eslint formatter problems run:
 
-```
-mkdir -p polygerrit-ui/app/plugins/chumpdetector
-ln -s /path/to/chumpdetector-plugin/src/main/resources/static polygerrit-ui/app/plugins/chumpdetector/static
-./polygerrit-ui/run-server.sh -host chromium-review.googlesource.com
-```
+    bazel test //plugins/chumpdetector/web:lint_test
+    bazel run //plugins/chumpdetector/web:lint_bin -- \
+      --fix "$(pwd)/plugins/chumpdetector/web"
 
-You may also need to edit `chumpdetectorURL` to point directly at
-`chromium-review.googlesource.com` instead of being relative.
+For testing the plugin with
+[Gerrit FE Dev Helper](https://gerrit.googlesource.com/gerrit-fe-dev-helper/)
+build the JavaScript bundle and copy it to the `plugins/chumpdetector` folder:
 
-## To run tests
+    bazel build //plugins/chumpdetector/web:chumpdetector
+    cp -f bazel-bin/plugins/chumpdetector/web/chumpdetector.js plugins/
 
-```
-npm run wct-test
-```
+Start polygerit-ui server:
+
+    ./polygerrit-ui/run-server.sh --plugins="plugins"
+
+and let the Dev Helper redirect from
+`.+/plugins/chumpdetector/static/chumpdetector.js` to
+`http://localhost:8081/plugins/chumpdetector.js`.
