@@ -18,6 +18,10 @@ import {Config} from './config';
 const STATUS_INTERVAL_MS = 60 * 1000;
 const UNKNOWN_DATE = new Date(0);
 
+// TODO(crbug.com/664559): Replace with updated documentation.
+const TREE_STATUS_DOC =
+  'https://chromium.googlesource.com/chromium/src/+/95221dd/docs/sheriff.md#tree';
+
 export declare interface TreeStatusComponents {
   tree: TreeStatus | null;
   status: Status | null;
@@ -243,6 +247,7 @@ export class TreeStatusView extends LitElement {
   static override styles = css`
     #outerDiv {
       align-items: center;
+      justify-content: space-between;
       display: flex;
       font-size: 1.1em;
       overflow-wrap: anywhere;
@@ -279,6 +284,10 @@ export class TreeStatusView extends LitElement {
             </a>`
           : html`${this.status.username}: ${this.status.message}`}
       </div>
+      <a href="${TREE_STATUS_DOC}" target="_blank">
+        <iron-icon icon="gr-icons:help-outline" style="color:var(--gray-800)">
+        </iron-icon>
+      </a>
     </div>`;
   }
 
