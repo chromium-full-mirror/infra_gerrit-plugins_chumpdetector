@@ -4,9 +4,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-
 package com.googlesource.chromium.plugins.chumpdetector;
 
+import com.google.common.flogger.FluentLogger;
 import com.google.gerrit.extensions.annotations.PluginName;
 import com.google.gerrit.extensions.restapi.Response;
 import com.google.gerrit.extensions.restapi.RestReadView;
@@ -17,12 +17,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Iterator;
 import javax.inject.Inject;
 import org.eclipse.jgit.lib.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class GetProjectChumpConfig implements RestReadView<ProjectResource> {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
   private static final String PROJECT = "project";
-  private static final Logger LOG = LoggerFactory.getLogger(GetProjectChumpConfig.class);
   private final PluginConfigFactory configFactory;
   private final String pluginName;
 
@@ -45,12 +43,13 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
 
     Iterator<String> names = cfg.getSubsections(PROJECT).iterator();
     if (!names.hasNext()) {
-      LOG.info("Project " + project.getName() + " has an empty config.");
+      logger.atInfo().log("Project %s has an empty config.", project.getName());
       return Response.none();
     }
     String name = names.next();
     if (names.hasNext()) {
-      LOG.info("Project " + project.getName() + " has more than one config; using the first.");
+      logger.atInfo().log(
+          "Project %s has more than one config; using the first.", project.getName());
     }
 
     r.treeName = name;
