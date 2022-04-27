@@ -59,12 +59,17 @@ const DISABLED_BRANCH_TREE_STATUS: Status = {
 
 export class TreeStatus {
   private readonly restApi: RestPluginApi;
+
   private readonly updateInterval: number;
 
   private config: Config | null = null;
+
   private elements: TreeStatusComponents[] = [];
+
   private initialized = false;
+
   private shouldFetchStatus = false;
+
   private status: Status | null = null;
 
   constructor(restApi: RestPluginApi) {

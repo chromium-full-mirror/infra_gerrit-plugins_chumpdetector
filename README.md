@@ -91,22 +91,22 @@ requests which will fail without the cookies.
 
 ## Web Plugin Development
 
+Run the commands below in web/.
+
 For running TypeScript unit tests execute:
 
-    bazel test --test_output=all //plugins/chumpdetector/web:karma_test
+    make test
 
 For checking or fixing eslint formatter problems run:
 
-    bazel test //plugins/chumpdetector/web:lint_test
-    bazel run //plugins/chumpdetector/web:lint_bin -- \
-      --fix "$(pwd)/plugins/chumpdetector/web"
+    make lint_test
+    make lint_fix
 
 For testing the plugin with
 [Gerrit FE Dev Helper](https://gerrit.googlesource.com/gerrit-fe-dev-helper/)
-build the JavaScript bundle and copy it to the `plugins/chumpdetector` folder:
+the command below builds the JavaScript bundle and copies it to the `plugins/chumpdetector` folder:
 
-    bazel build //plugins/chumpdetector/web:chumpdetector
-    cp -f bazel-bin/plugins/chumpdetector/web/chumpdetector.js plugins/
+    make build
 
 Start polygerit-ui server:
 
