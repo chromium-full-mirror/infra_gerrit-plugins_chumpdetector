@@ -268,9 +268,22 @@ export class TreeStatusView extends LitElement {
       color: black;
       background-color: #bce889;
     }
+    #outerDiv.open a {
+      color: black;
+    }
     #outerDiv.closed {
       color: white;
       background-color: #e98080;
+    }
+    #outerDiv.closed a {
+      color: white;
+    }
+    #outerDiv.throttled {
+      color: black;
+      background-color: #fff477;
+    }
+    #outerDiv.throttled a {
+      color: black;
     }
     #outerDiv.hidden {
       display: none;
