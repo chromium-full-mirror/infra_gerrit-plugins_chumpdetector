@@ -250,43 +250,65 @@ export class TreeStatusView extends LitElement {
   tree: TreeStatus | null = null;
 
   static override styles = css`
-    #outerDiv {
-      align-items: center;
-      justify-content: space-between;
+    #main {
+      margin-left: var(--spacing-s);
+      max-width: 40em;
       display: flex;
-      font-size: 1.1em;
-      overflow-wrap: anywhere;
-      margin: 5px 0 8px;
-      padding: 0.4em;
-      max-width: 20em;
     }
-    #outerDiv.unknown {
-      color: black;
-      background-color: #fffc6c;
+
+    #key {
+      line-height: var(--line-height-small);
+      color: var(--deemphasized-text-color);
+      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) var(--spacing-s);
+      white-space: nowrap;
     }
-    #outerDiv.open {
-      color: black;
-      background-color: #bce889;
+
+    #value {
+      line-height: var(--line-height-small);
+      font-size: var(--font-size-small);
+      border-radius: 12px;
+      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) var(--spacing-s);
+      width: fit-content;
+      word-break: break-word;
     }
-    #outerDiv.open a {
-      color: black;
+
+    #value a {
+      display: block;
+      color: var(--chip-color);
+      text-decoration: none;
     }
-    #outerDiv.closed {
-      color: white;
-      background-color: #e98080;
+
+    #value.unknown {
+      background-color: var(--gray-background);
+      border: 1px solid var(--gray-foreground);
     }
-    #outerDiv.closed a {
-      color: white;
+    #value.open {
+      background-color: var(--success-background);
+      border: 1px solid var(--success-foreground);
     }
-    #outerDiv.throttled {
-      color: black;
-      background-color: #fff477;
+    #value.closed {
+      background-color: var(--error-background);
+      border: 1px solid var(--error-foreground);
     }
-    #outerDiv.throttled a {
-      color: black;
+    #value.throttled {
+      background-color: var(--warning-background);
+      border: 1px solid var(--warning-foreground);
     }
-    #outerDiv.hidden {
-      display: none;
+
+    gr-icon {
+      font-size: var(--line-height-small);
+    }
+    #value.open gr-icon {
+      color: var(--success-foreground);
+    }
+    #value.closed gr-icon {
+      color: var(--error-foreground);
+    }
+    #value.throttled gr-icon {
+      color: var(--warning-foreground);
+    }
+    #value.unknown gr-icon {
+      color: var(--gray-foreground);
     }
   `;
 
@@ -294,22 +316,25 @@ export class TreeStatusView extends LitElement {
     if (!this.status) {
       return;
     }
-    return html`<div id="outerDiv" class="${this.getStyle()}">
-      <div>
-        ${this.status.url
+    const cls = this.getClass();
+    return html`<div id="main">
+      <div id="key">Tree Status
+        <a href="${TREE_STATUS_DOC}" target="_blank">
+          <gr-icon icon="help_outline"></gr-icon>
+        </a>
+      </div>
+      <div id="value" class="${cls}">
+        <a>${this.status.url
           ? html`<a href="${this.status.url}" target="_blank">
+              <gr-icon icon="${cls == "open" ? "check_circle" : "error"}"></gr-icon>
               ${this.status.message}
             </a>`
           : html`${this.status.username}: ${this.status.message}`}
       </div>
-      <a href="${TREE_STATUS_DOC}" target="_blank">
-        <iron-icon icon="gr-icons:help-outline" style="color:var(--gray-800)">
-        </iron-icon>
-      </a>
     </div>`;
   }
 
-  private getStyle() {
+  private getClass() {
     if (!this.status) {
       return 'hidden';
     }

@@ -23,18 +23,18 @@ suite('tree-status-view basic tests', () => {
     document.body.removeChild(element);
   });
 
-  test('getStyle tests', async () => {
+  test('getClass tests', async () => {
     element.status = null;
     await element.updateComplete;
     const root = element.shadowRoot ?? element;
-    assert.isEmpty(root.querySelectorAll('outerDiv'));
+    assert.isEmpty(root.querySelectorAll('#main'));
 
     element.status = {} as Status;
     await element.updateComplete;
-    assert.strictEqual(root.querySelector('#outerDiv')?.className, 'unknown');
+    assert.strictEqual(root.querySelector('#value')?.className, 'unknown');
 
     element.status = {generalState: 'foo'} as Status;
     await element.updateComplete;
-    assert.strictEqual(root.querySelector('#outerDiv')?.className, 'foo');
+    assert.strictEqual(root.querySelector('#value')?.className, 'foo');
   });
 });
