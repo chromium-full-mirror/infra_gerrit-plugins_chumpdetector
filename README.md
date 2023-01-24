@@ -27,7 +27,7 @@ file should be called `chumpdetector.config` and should be of the form:
     statusURL = https://chromium-status.appspot.com/current?format=json
     withCredentials = false
     enforceCommitQueue = false
-    disabledBranchPattern = ^(?:refs/meta/config|refs/heads/.*)$
+    disabledBranchPattern = ^(refs/meta/config|.*)$
 ```
 
 ### Project name
@@ -68,8 +68,26 @@ of those things mean.
 
 ### disabledBranchPattern
 
+> Anyone defining this property is strongly recommended to include
+> `refs/meta/config` since we never enable the CQ on this branch.
+
 CLs on branches that match this pattern will have the plugin disabled. This
 means they won't see tree status and tree status won't effect the CL in any way.
+
+The branch name comes from the
+[Gerrit CL ChangeInfo](https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info).
+The `refs/heads/` prefix is omitted, but otherwise is the full name. Common
+examples are `main` (in the case of `refs/heads/main`) and `refs/meta/config`.
+
+The pattern syntax uses
+[JavaScript Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+with no flags. This means the match is case-sensitive, and you should use `^`
+and `$` anchors to avoid accidental partial matches. For example, the pattern
+`main` will match any branch name that has the substring `main` in it, not only
+the `main` branch itself.
+
+There is no need to quote the string. If quotes are used, they are automatically
+stripped (outermost only). For example, `"^main$"` is turned into `^main$`.
 
 ### preloadImageURL
 
