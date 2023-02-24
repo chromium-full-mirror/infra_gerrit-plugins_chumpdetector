@@ -102,6 +102,18 @@ Most installs will not need this configuration and can ignore it. For certain
 sites this may allow them to get security cookies before attempting status
 requests which will fail without the cookies.
 
+### Inheritance
+
+Repos with no `chumpdetector.config` will inherit it from the `inheritFrom` repo
+in `project.config`. To disable the plugin for a repo, without breaking the inheritance,
+create a `chumpdetector.config` for the repo with:
+
+```
+[project "some-project-name"]
+disabled = true
+```
+
+
 ## Web Plugin Development
 
 Run the commands below in web/.
