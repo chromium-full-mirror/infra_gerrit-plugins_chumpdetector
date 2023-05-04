@@ -109,9 +109,12 @@ in `project.config`. To disable the plugin for a repo, without breaking the inhe
 create a `chumpdetector.config` for the repo with:
 
 ```
-[project "some-project-name"]
-disabled = true
+[project "some-interesting-project"]
+    disabled = true
 ```
+
+Make sure the project name matches the one in the parent repo's `chumpdetector.config`,
+otherwise the plugin will not be disabled.
 
 
 ## Web Plugin Development
