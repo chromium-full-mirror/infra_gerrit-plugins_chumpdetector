@@ -32,7 +32,8 @@ file should be called `chumpdetector.config` and should be of the form:
 
 ### Project name
 
-The project name doesn't matter, it can be anything you'd like
+The project name doesn't matter, it can be anything you'd like. It will be
+displayed to the user in messages to refer to the project itself.
 
 ### loginURL
 
