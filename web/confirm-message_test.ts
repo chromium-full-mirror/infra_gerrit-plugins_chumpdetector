@@ -135,4 +135,26 @@ suite('confirm-message basic tests', () => {
       'foo tree status is baz'
     );
   });
+
+  test('supports enforcing CQ without a tree status', async () => {
+    element.config = {
+      treeName: 'foo',
+      enforceCommitQueue: true,
+      disabled: false,
+      disabledBranchPattern: '',
+      loginURL: '',
+      preloadImageURL: '',
+      statusURL: '',
+      viewURL: '',
+      withCredentials: false,
+    };
+    element.status = null;
+    await element.updateComplete;
+    const root = element.shadowRoot ?? element;
+    assert.isFalse(root.querySelector('div')?.hidden);
+    assert.include(
+      root.querySelector('div')?.innerHTML,
+      'The foo project uses the commit queue (CQ)'
+    );
+  });
 });

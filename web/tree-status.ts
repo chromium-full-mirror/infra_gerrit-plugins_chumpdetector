@@ -111,7 +111,7 @@ export class TreeStatus {
     )}/chumpdetector~config`;
     this.config = (await this.restApi.get(configUrl)) || null;
 
-    if (!this.config || !this.config.statusURL) {
+    if (!this.config) {
       console.info('Chumpdetector is not configured.');
       return;
     }
@@ -127,6 +127,11 @@ export class TreeStatus {
     ) {
       console.info('Disabling Chumpdetector based on branch name.');
       this.status = DISABLED_BRANCH_TREE_STATUS;
+      return;
+    }
+
+    if (!this.config.statusURL) {
+      console.info('Using chumpdetector without status url.');
       return;
     }
 

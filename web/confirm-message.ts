@@ -56,12 +56,12 @@ export class ConfirmMessage extends LitElement {
   }
 
   private onChange() {
-    if (this.config === null || this.status === null) {
+    if (this.config === null) {
       return;
     }
 
     // Change is in unsupported branch, do not block it.
-    if (this.status.disabled) {
+    if (this.status?.disabled) {
       this.disabled = true;
       return;
     }
@@ -81,7 +81,7 @@ export class ConfirmMessage extends LitElement {
     }
 
     // Tree is open, do not block the change.
-    if (this.status.isOpen) {
+    if (this.status?.isOpen) {
       this.disabled = true;
       return;
     }
@@ -90,7 +90,8 @@ export class ConfirmMessage extends LitElement {
     // Warn the user.
     this.disabled = false;
     this.message =
-      `${this.config.treeName} tree status is ${this.status.generalState}, ` +
+      `${this.config.treeName} tree status is ` +
+      `${this.status?.generalState || 'unknown'}, ` +
       'submitting this change is dangerous. Submit anyway?';
   }
 }
