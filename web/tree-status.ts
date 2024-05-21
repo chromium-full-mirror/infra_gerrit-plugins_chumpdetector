@@ -5,7 +5,7 @@
  * found in the LICENSE file.
  */
 
-import {ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
+import {ChangeId, ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
 
 import {RestPluginApi} from '@gerritcodereview/typescript-api/rest';
 
@@ -14,6 +14,7 @@ import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
 
 import {Config} from './config';
+import {AuthorizationHeader, getAuthorizationHeader} from './auth';
 
 const STATUS_INTERVAL_MS = 60 * 1000;
 const UNKNOWN_DATE = new Date(0);
@@ -40,11 +41,10 @@ export declare interface Status {
 }
 
 declare interface StatusResponse {
-  can_commit_freely: boolean;
-  general_state: string;
+  generalState: string;
   message: string;
-  username: string;
-  date: string;
+  createUser: string;
+  createTime: string;
 }
 
 const DISABLED_BRANCH_TREE_STATUS: Status = {
@@ -158,27 +158,48 @@ export class TreeStatus {
   }
 
   private async updateStatusOnElements() {
-    if (!this.initialized || !this.shouldFetchStatus) {
+    if (
+      !this.initialized ||
+      !this.shouldFetchStatus ||
+      this.elements.length === 0
+    ) {
       return;
     }
-    await this.fetchStatus();
+
+    await this.fetchStatus(this.elements[0].change.change_id);
     for (const element of this.elements) {
       element.status = this.status;
       element.config = this.config;
     }
   }
 
-  private async fetchStatus() {
+  private async fetchStatus(changeId: ChangeId) {
     if (this.config === null) {
       return;
     }
     // Launch async GET.
-    const options: {[k: string]: string} = {};
-    if (this.config.withCredentials) {
-      options['credentials'] = 'include';
-    }
-    const response = await fetch(this.config.statusURL, options);
-    const responseText = await response.text();
+    const authorizationHeaders = await this.getAuthorizationHeader(changeId);
+    const treeId =
+      this.config.treeId ||
+      this.config.statusURL
+        ?.replace(/^https?:\/\//, '')
+        ?.replace(/\.appspot\.com.*$/, '')
+        ?.replace(/-status$/, '')
+        ?.toLocaleLowerCase();
+    const options: RequestInit = {
+      method: 'POST',
+      body: JSON.stringify({name: `trees/${treeId}/status/latest`}),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...authorizationHeaders,
+      },
+    };
+    const response = await fetch(
+      'https://luci-tree-status.appspot.com/prpc/luci.tree_status.v1.TreeStatus/GetStatus',
+      options
+    );
+    const responseText = (await response.text()).replace(/^\)\]\}'/, '');
     console.info('Fetched', this.config.statusURL);
 
     if (response.status === 200) {
@@ -186,12 +207,12 @@ export class TreeStatus {
         const jsonResponse = JSON.parse(responseText) as StatusResponse;
         this.status = {
           disabled: false,
-          isOpen: jsonResponse.can_commit_freely,
-          generalState: jsonResponse.general_state,
+          isOpen: jsonResponse.generalState === 'OPEN',
+          generalState: jsonResponse.generalState.toLowerCase(),
           message: jsonResponse.message,
-          username: jsonResponse.username,
-          date: new Date(jsonResponse.date.replace(' ', 'T')),
-          url: this.config.viewURL,
+          username: jsonResponse.createUser,
+          date: new Date(jsonResponse.createTime),
+          url: `https://ci.chromium.org/ui/labs/tree-status/${treeId}`,
         };
       } catch (exception) {
         console.error(`Error parsing json: ${exception}`);
@@ -202,7 +223,7 @@ export class TreeStatus {
           message: String(exception),
           username: 'ParseError',
           date: UNKNOWN_DATE,
-          url: this.config.viewURL,
+          url: `https://ci.chromium.org/ui/labs/tree-status/${treeId}`,
         };
       }
       return;
@@ -214,26 +235,19 @@ export class TreeStatus {
       generalState: 'unknown',
       username: 'RequestError',
       date: UNKNOWN_DATE,
-      message: 'Login required.',
+      message:
+        responseText || `Error ${response.status} requesting tree status`,
       url: null,
     };
+  }
 
-    if (!this.config.withCredentials) {
-      this.status.url = this.config.viewURL;
-      this.status.message =
-        responseText || `Error ${response.status} requesting tree status`;
-    } else if (this.config.loginURL) {
-      this.status.url = this.config.loginURL;
-      this.status.message = 'Login required. Click here to login.';
-    } else {
-      console.warn(
-        `chumpdetector failed to request ${this.config.viewURL} and got ` +
-          `status ${response.status}. You may want to add a loginURL to your ` +
-          'chumpdetector configuration to give your users a link they can ' +
-          'click on to take them to a logging page. See ' +
-          'https://chromium.googlesource.com/infra/gerrit-plugins/chumpdetector/#loginurl.'
-      );
-    }
+  /**
+   * Mockable equivalent of getAuthorizationHeader.
+   *
+   * @returns authorization header to use in requests.
+   */
+  getAuthorizationHeader(changeId: ChangeId): Promise<AuthorizationHeader> {
+    return getAuthorizationHeader(changeId);
   }
 }
 
@@ -264,7 +278,8 @@ export class TreeStatusView extends LitElement {
     #key {
       line-height: var(--line-height-small);
       color: var(--deemphasized-text-color);
-      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) var(--spacing-s);
+      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs)
+        var(--spacing-s);
       white-space: nowrap;
     }
 
@@ -272,7 +287,8 @@ export class TreeStatusView extends LitElement {
       line-height: var(--line-height-small);
       font-size: var(--font-size-small);
       border-radius: 12px;
-      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) var(--spacing-s);
+      padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs)
+        var(--spacing-s);
       width: fit-content;
       word-break: break-word;
     }
@@ -329,12 +345,16 @@ export class TreeStatusView extends LitElement {
         </a>
       </div>
       <div id="value" class="${cls}">
-        <a>${this.status.url
-          ? html`<a href="${this.status.url}" target="_blank">
-              <gr-icon icon="${cls == "open" ? "check_circle" : "error"}"></gr-icon>
-              ${this.status.message}
-            </a>`
-          : html`${this.status.username}: ${this.status.message}`}
+        <a>${
+          this.status.url
+            ? html`<a href="${this.status.url}" target="_blank">
+                <gr-icon
+                  icon="${cls === 'open' ? 'check_circle' : 'error'}"
+                ></gr-icon>
+                ${this.status.message}
+              </a>`
+            : html`${this.status.username}: ${this.status.message}`
+        }
       </div>
     </div>`;
   }

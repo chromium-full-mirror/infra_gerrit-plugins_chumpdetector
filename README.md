@@ -22,10 +22,7 @@ file should be called `chumpdetector.config` and should be of the form:
 
 ```
 [project "some-interesting-project"]
-    loginURL = https://login.appspot.com/?next=chromium-status
-    viewURL = https://chromium-status.appspot.com/
-    statusURL = https://chromium-status.appspot.com/current?format=json
-    withCredentials = false
+    treeId = chromium
     enforceCommitQueue = false
     disabledBranchPattern = ^(refs/meta/config|.*)$
 ```
@@ -35,30 +32,13 @@ file should be called `chumpdetector.config` and should be of the form:
 The project name doesn't matter, it can be anything you'd like. It will be
 displayed to the user in messages to refer to the project itself.
 
-### loginURL
+### treeId
 
-If `withCredentials` is true and a request for status fails, the system assumes
-that a login is required and has not occurred. In that case the status message
-will change to "Login required. Click here to login." The text will be a link
-that points to the value of `loginURL`. If `loginURL` is not set then the
-message will just be `RequestError: Login required.` with no link.
+The name of the tree to display status of.  This should be the same as the
+last component of the URL to view your tree, e.g. for
+[https://ci.chromium.org/ui/labs/tree-status/chromium](https://ci.chromium.org/ui/labs/tree-status/chromium)
+the treeId is `chromium`.
 
-### viewURL
-
-This should be the URL to your status app. This is used to provide a link that
-users can click on to take them to a new page that shows the full status.
-
-### statusURL
-
-This should be the URL to get a JSON blob of the current status. Usually this
-will be related to the `viewURL` value. This is the URL that will be queried via
-XHR periodically while the user is on the page to update the tree status.
-
-### withCredentials
-
-This is simply passed through to the underlying JavaScript XMLHttpRequest object
-as the `withCredentials` parameter. You can read about it at
-https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
 
 ### enforceCommitQueue
 
@@ -103,7 +83,41 @@ Most installs will not need this configuration and can ignore it. For certain
 sites this may allow them to get security cookies before attempting status
 requests which will fail without the cookies.
 
-### Inheritance
+### Deprecated: loginURL
+
+This field is deprecated and no longer used.
+
+*If `withCredentials` is true and a request for status fails, the system assumes
+that a login is required and has not occurred. In that case the status message
+will change to "Login required. Click here to login." The text will be a link
+that points to the value of `loginURL`. If `loginURL` is not set then the
+message will just be `RequestError: Login required.` with no link.*
+
+### Deprecated: viewURL
+
+This field is deprecated and no longer used.
+
+*This should be the URL to your status app. This is used to provide a link that
+users can click on to take them to a new page that shows the full status.*
+
+### Deprecated: statusURL
+
+This field is deprecated.  It is only used during migration to obtain a treeName
+value if one is not specified directly in the configuration.
+
+*This should be the URL to get a JSON blob of the current status. Usually this
+will be related to the `viewURL` value. This is the URL that will be queried via
+XHR periodically while the user is on the page to update the tree status.*
+
+### Deprecated: withCredentials
+
+This field is deprecated and no longer used.
+
+*This is simply passed through to the underlying JavaScript XMLHttpRequest object
+as the `withCredentials` parameter. You can read about it at
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials*
+
+## Inheritance
 
 Repos with no `chumpdetector.config` will inherit it from the `inheritFrom` repo
 in `project.config`. To disable the plugin for a repo, without breaking the inheritance,

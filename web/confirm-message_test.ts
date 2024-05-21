@@ -28,12 +28,10 @@ suite('confirm-message basic tests', () => {
       enforceCommitQueue: false,
       disabled: false,
       disabledBranchPattern: '',
-      loginURL: '',
       preloadImageURL: '',
       statusURL: '',
       treeName: '',
-      viewURL: '',
-      withCredentials: false,
+      treeId: '',
     };
 
     element.status = {
@@ -53,14 +51,12 @@ suite('confirm-message basic tests', () => {
   test('sets message with enforceCommitQueue', async () => {
     element.config = {
       treeName: 'foo',
+      treeId: '',
       enforceCommitQueue: true,
       disabled: false,
       disabledBranchPattern: '',
-      loginURL: '',
       preloadImageURL: '',
       statusURL: '',
-      viewURL: '',
-      withCredentials: false,
     };
     element.status = {
       disabled: false,
@@ -83,14 +79,12 @@ suite('confirm-message basic tests', () => {
   test('sets disabled if status isOpen', async () => {
     element.config = {
       treeName: '',
+      treeId: '',
       enforceCommitQueue: false,
       disabled: false,
       disabledBranchPattern: '',
-      loginURL: '',
       preloadImageURL: '',
       statusURL: '',
-      viewURL: '',
-      withCredentials: false,
     };
     element.status = {
       disabled: false,
@@ -109,14 +103,12 @@ suite('confirm-message basic tests', () => {
   test('sets message if tree status is unknown', async () => {
     element.config = {
       treeName: 'foo',
+      treeId: 'foo',
       enforceCommitQueue: false,
       disabled: false,
       disabledBranchPattern: '',
-      loginURL: '',
       preloadImageURL: '',
       statusURL: '',
-      viewURL: '',
-      withCredentials: false,
     };
     element.status = {
       disabled: false,
@@ -139,14 +131,12 @@ suite('confirm-message basic tests', () => {
   test('supports enforcing CQ without a tree status', async () => {
     element.config = {
       treeName: 'foo',
+      treeId: 'foo',
       enforceCommitQueue: true,
       disabled: false,
       disabledBranchPattern: '',
-      loginURL: '',
       preloadImageURL: '',
       statusURL: '',
-      viewURL: '',
-      withCredentials: false,
     };
     element.status = null;
     await element.updateComplete;

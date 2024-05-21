@@ -8,10 +8,8 @@
 export interface Config {
   disabled: boolean;
   treeName: string;
-  viewURL: string;
-  loginURL: string;
-  statusURL: string;
-  withCredentials: boolean;
+  treeId?: string;
+  statusURL?: string;
   enforceCommitQueue: boolean;
   disabledBranchPattern: string;
   preloadImageURL: string;
