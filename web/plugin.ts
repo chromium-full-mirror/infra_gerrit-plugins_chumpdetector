@@ -19,11 +19,11 @@ window.Gerrit.install(plugin => {
   plugin
     .registerCustomComponent('commit-container', 'tree-status-view')
     .onAttached(treeStatusView => {
-      treeStatus.register(treeStatusView as TreeStatusView);
+      treeStatus.register(treeStatusView as unknown as TreeStatusView);
     });
   plugin
     .registerCustomComponent('confirm-submit-change', 'confirm-message')
     .onAttached(confirmMessage => {
-      treeStatus.register(confirmMessage as ConfirmMessage);
+      treeStatus.register(confirmMessage as unknown as ConfirmMessage);
     });
 });
