@@ -130,12 +130,16 @@ export class TreeStatus {
       return;
     }
 
-    if (!this.config.statusURL) {
-      console.info('Using chumpdetector without status url.');
+    if (!this.config.statusURL && !this.config.treeId) {
+      console.info('Using chumpdetector without status url or tree id.');
       return;
     }
 
-    console.info(`Chumpdetector using status url: ${this.config.statusURL}`);
+    if (this.config.treeId) {
+      console.info(`Chumpdetector using tree id: ${this.config.treeId}`);
+    } else {
+      console.info(`Chumpdetector using status url: ${this.config.statusURL}`);
+    }
 
     // If the configuration specifies loading an image URL first then
     // request the image. Whether it succeeds or fails immediately
