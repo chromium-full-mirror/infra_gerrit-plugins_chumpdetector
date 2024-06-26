@@ -24,7 +24,7 @@ file should be called `chumpdetector.config` and should be of the form:
 [project "some-interesting-project"]
     treeId = chromium
     enforceCommitQueue = false
-    disabledBranchPattern = ^(refs/meta/config|.*)$
+    disabledBranchPattern = ^refs/meta/config$
 ```
 
 ### Project name
