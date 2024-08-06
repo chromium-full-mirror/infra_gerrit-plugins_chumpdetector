@@ -200,7 +200,7 @@ export class TreeStatus {
       },
     };
     const response = await fetch(
-      'https://luci-tree-status.appspot.com/prpc/luci.tree_status.v1.TreeStatus/GetStatus',
+      'https://treestatus.api.luci.app/prpc/luci.tree_status.v1.TreeStatus/GetStatus',
       options
     );
     const responseText = (await response.text()).replace(/^\)\]\}'/, '');
