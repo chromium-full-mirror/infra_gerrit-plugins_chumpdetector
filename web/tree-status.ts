@@ -5,7 +5,7 @@
  * found in the LICENSE file.
  */
 
-import {ChangeId, ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
+import {ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
 
 import {RestPluginApi} from '@gerritcodereview/typescript-api/rest';
 
@@ -170,19 +170,21 @@ export class TreeStatus {
       return;
     }
 
-    await this.fetchStatus(this.elements[0].change.change_id);
+    await this.fetchStatus(this.elements[0].change);
     for (const element of this.elements) {
       element.status = this.status;
       element.config = this.config;
     }
   }
 
-  private async fetchStatus(changeId: ChangeId) {
+  private async fetchStatus(changeInfo: ChangeInfo) {
     if (this.config === null) {
       return;
     }
     // Launch async GET.
-    const authorizationHeaders = await this.getAuthorizationHeader(changeId);
+    const authorizationHeaders = await this.getAuthorizationHeader(
+      changeInfo.id
+    );
     const treeId =
       this.config.treeId ||
       this.config.statusURL
@@ -250,7 +252,7 @@ export class TreeStatus {
    *
    * @returns authorization header to use in requests.
    */
-  getAuthorizationHeader(changeId: ChangeId): Promise<AuthorizationHeader> {
+  getAuthorizationHeader(changeId: string): Promise<AuthorizationHeader> {
     return getAuthorizationHeader(changeId);
   }
 }
