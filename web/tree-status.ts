@@ -218,7 +218,7 @@ export class TreeStatus {
           message: jsonResponse.message,
           username: jsonResponse.createUser,
           date: new Date(jsonResponse.createTime),
-          url: `https://ci.chromium.org/ui/labs/tree-status/${treeId}`,
+          url: `https://ci.chromium.org/ui/tree-status/${treeId}`,
         };
       } catch (exception) {
         console.error(`Error parsing json: ${exception}`);
@@ -229,7 +229,7 @@ export class TreeStatus {
           message: String(exception),
           username: 'ParseError',
           date: UNKNOWN_DATE,
-          url: `https://ci.chromium.org/ui/labs/tree-status/${treeId}`,
+          url: `https://ci.chromium.org/ui/tree-status/${treeId}`,
         };
       }
       return;

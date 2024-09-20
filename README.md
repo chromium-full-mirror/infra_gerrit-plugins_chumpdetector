@@ -36,7 +36,7 @@ displayed to the user in messages to refer to the project itself.
 
 The name of the tree to display status of.  This should be the same as the
 last component of the URL to view your tree, e.g. for
-[https://ci.chromium.org/ui/labs/tree-status/chromium](https://ci.chromium.org/ui/labs/tree-status/chromium)
+[https://ci.chromium.org/ui/tree-status/chromium](https://ci.chromium.org/ui/tree-status/chromium)
 the treeId is `chromium`.
 
 
