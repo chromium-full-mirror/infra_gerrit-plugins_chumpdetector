@@ -57,7 +57,7 @@ class GetProjectChumpConfig implements RestReadView<ProjectResource> {
     r.treeId = cfg.getString(PROJECT, name, "treeId");
     r.statusURL = cfg.getString(PROJECT, name, "statusURL");
     r.enforceCommitQueue = cfg.getBoolean(PROJECT, name, "enforceCommitQueue", false);
-    r.disabledBranchPattern = cfg.getString(PROJECT, name, "disabledBranchPattern");
+    r.disabledBranchPattern = cfg.getString(PROJECT, name, "disabledBranchPattern").orElse("^refs/meta/config$");
     r.preloadImageURL = cfg.getString(PROJECT, name, "preloadImageURL");
     return Response.ok(r);
   }

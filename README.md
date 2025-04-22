@@ -24,7 +24,6 @@ file should be called `chumpdetector.config` and should be of the form:
 [project "some-interesting-project"]
     treeId = chromium
     enforceCommitQueue = false
-    disabledBranchPattern = ^refs/meta/config$
 ```
 
 ### Project name
@@ -51,6 +50,7 @@ of those things mean.
 
 > Anyone defining this property is strongly recommended to include
 > `refs/meta/config` since we never enable the CQ on this branch.
+> The default value is `^refs/meta/config$`. To unset it, use an empty string.
 
 CLs on branches that match this pattern will have the plugin disabled. This
 means they won't see tree status and tree status won't effect the CL in any way.
