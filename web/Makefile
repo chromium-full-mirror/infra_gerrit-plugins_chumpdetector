@@ -5,7 +5,7 @@
 .PHONY: test
 
 test:
-	bazel test --test_output=all //plugins/chumpdetector/web:karma_test
+	bazel test --test_output=all //plugins/chumpdetector/web:web_test_runner
 
 lint_test:
 	bazel test //plugins/chumpdetector/web:lint_test

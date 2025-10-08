@@ -5,7 +5,8 @@
  * found in the LICENSE file.
  */
 
-import {assert} from '@open-wc/testing';
+import './test-setup';
+import {assert, fixture, html} from '@open-wc/testing';
 
 import './tree-status';
 
@@ -15,13 +16,10 @@ suite('tree-status-view basic tests', () => {
   let element: TreeStatusView;
 
   setup(async () => {
-    element = document.createElement('tree-status-view') as TreeStatusView;
-    document.body.appendChild(element);
+    element = await fixture<TreeStatusView>(
+      html`<tree-status-view></tree-status-view>`
+    );
     await element.updateComplete;
-  });
-
-  teardown(() => {
-    document.body.removeChild(element);
   });
 
   test('getClass tests', async () => {

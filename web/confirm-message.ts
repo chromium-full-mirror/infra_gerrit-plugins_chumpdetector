@@ -9,7 +9,7 @@ import {ChangeInfo} from '@gerritcodereview/typescript-api/rest-api';
 
 import {LitElement, PropertyValues, html} from 'lit';
 
-import {customElement, property, state} from 'lit/decorators';
+import {customElement, property, state} from 'lit/decorators.js';
 
 import {TreeStatus, Status} from './tree-status';
 import {Config} from './config';

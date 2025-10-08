@@ -5,7 +5,8 @@
  * found in the LICENSE file.
  */
 
-import {assert} from '@open-wc/testing';
+import './test-setup';
+import {assert, fixture, html} from '@open-wc/testing';
 
 import './confirm-message';
 
@@ -14,13 +15,10 @@ import {ConfirmMessage} from './confirm-message';
 suite('confirm-message basic tests', () => {
   let element: ConfirmMessage;
 
-  setup(() => {
-    element = document.createElement('confirm-message') as ConfirmMessage;
-    document.body.appendChild(element);
-  });
-
-  teardown(() => {
-    document.body.removeChild(element);
+  setup(async () => {
+    element = await fixture<ConfirmMessage>(
+      html`<confirm-message></confirm-message>`
+    );
   });
 
   test('sets disabled if status is disabled', async () => {

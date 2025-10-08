@@ -11,7 +11,7 @@ import {RestPluginApi} from '@gerritcodereview/typescript-api/rest';
 
 import {css, html, LitElement} from 'lit';
 
-import {customElement, property} from 'lit/decorators';
+import {customElement, property} from 'lit/decorators.js';
 
 import {Config} from './config';
 import {AuthorizationHeader, getAuthorizationHeader} from './auth';
