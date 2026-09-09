@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig-plugins-base.json",
   "compilerOptions": {
-    "outDir": "../../../.ts-out/plugins/chumpdetector/web"
+    "rootDir": "."
   },
   "include": [
-    "**/*"
+    "**/*.ts"
   ]
 }
