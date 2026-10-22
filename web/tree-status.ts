@@ -19,9 +19,8 @@ import {AuthorizationHeader, getAuthorizationHeader} from './auth';
 const STATUS_INTERVAL_MS = 60 * 1000;
 const UNKNOWN_DATE = new Date(0);
 
-// TODO(crbug.com/664559): Replace with updated documentation.
 const TREE_STATUS_DOC =
-  'https://chromium.googlesource.com/chromium/src/+/95221dd/docs/sheriff.md#tree';
+  'https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gardener.md#tree-status';
 
 export declare interface TreeStatusComponents {
   tree: TreeStatus | null;
